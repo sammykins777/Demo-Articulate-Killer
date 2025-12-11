@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Modern Web-First Learning Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--
+SOURCE OF TRUTH NOTE
+
+This file’s HTML structure and CSS visual design (layout, colors, spacing,
+typography, components) should be treated as fixed unless I explicitly ask
+for visual or structural changes.
+
+When adding JavaScript or new behaviors:
+- Do NOT rewrite or restyle existing CSS.
+- Do NOT rename or remove existing classes or IDs.
+- Only add:
+  - New JS in separate <script> blocks or files.
+  - Minimal new attributes (like data-* hooks or ARIA) where needed.
+  - New elements inside existing containers when explicitly requested.
+
+If a change would alter the current look and feel, stop and ask for
+confirmation first.
+-->
+
+  <style>
+    /* =========================
+       Design Tokens
+       ========================= */
+    :root {
+      --color-bg: #f5f5f8;
+      --color-surface: #ffffff;
+      --color-surface-soft: #f1f3f8;
+      --color-primary: #4b6bfb;
+      --color-primary-soft: rgba(75, 107, 251, 0.1);
+      --color-accent: #f97373;
+      --color-text: #1f2933;
+      --color-text-muted: #6b7280;
+      --color-border-subtle: #e2e4ec;
+
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-pill: 999px;
+
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.12);
+      --shadow-subtle: 0 8px 20px rgba(15, 23, 42, 0.06);
+
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 40px;
+      --space-2xl: 64px;
+
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI",
+        sans-serif;
+
+      --transition-fast: 160ms ease-out;
+      --transition-med: 220ms ease-out;
+    }
+
+    /* =========================
+       Base & Layout
+       ========================= */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      color: var(--color-text);
+      background: var(--color-bg);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    main {
+      display: block;
+    }
+
+    .page {
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    section {
+      padding: var(--space-2xl) 0;
+    }
+
+    /* =========================
+       Focus Styles (A11y)
+       ========================= */
+    :where(a, button, input, textarea, select) {
+      outline: none;
+    }
+
+    :where(a, button, input, textarea, select):focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 3px;
+      box-shadow: 0 0 0 3px var(--color-primary-soft);
+    }
+
+    /* =========================
+       Header / Hero
+       ========================= */
+    header.site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      background: linear-gradient(
+        to bottom,
+        rgba(245, 245, 248, 0.92),
+        rgba(245, 245, 248, 0.75),
+        transparent
+      );
+    }
+
+    .site-header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md) 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    .brand-mark {
+      width: 24px;
+      height: 24px;
+      border-radius: 10px;
+      background: conic-gradient(
+        from 160deg,
+        #4b6bfb,
+        #22c55e,
+        #f97373,
+        #4b6bfb
+      );
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: var(--space-md);
+      font-size: 14px;
+      color: var(--color-text-muted);
+    }
+
+    .nav-links a {
+      padding: 6px 10px;
+      border-radius: var(--radius-pill);
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+
+    .nav-links a:hover {
+      background: var(--color-primary-soft);
+      color: var(--color-primary);
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, -200%);
+      padding: 8px 14px;
+      border-radius: var(--radius-pill);
+      background: #111827;
+      color: white;
+      font-size: 14px;
+      z-index: 30;
+      transition: transform var(--transition-fast);
+    }
+
+    .skip-link:focus-visible {
+      transform: translate(-50%, 8px);
+    }
+
+    .hero {
+      background: radial-gradient(circle at top left, #e0e7ff 0, transparent 55%),
+        radial-gradient(circle at top right, #fee2e2 0, transparent 55%);
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: var(--space-xl);
+      align-items: center;
+      padding: var(--space-2xl) 0 var(--space-xl);
+    }
+
+    .hero-copy-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(15, 23, 42, 0.04);
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-md);
+    }
+
+    .hero-copy-eyebrow-badge {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.4);
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: var(--space-md);
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      color: var(--color-text-muted);
+      max-width: 36rem;
+      margin-bottom: var(--space-lg);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      align-items: center;
+    }
+
+    .btn-primary {
+      border: none;
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: var(--radius-pill);
+      background: var(--color-primary);
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-soft);
+      transition:
+        background var(--transition-fast),
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+    }
+
+    .btn-primary:hover {
+      background: #3949d6;
+      transform: translateY(-1px);
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.22);
+    }
+
+    .btn-link {
+      border: none;
+      background: none;
+      padding: 0;
+      font-size: 14px;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-link span.chevron {
+      font-size: 16px;
+      transform: translateY(1px);
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 260px;
+      border-radius: 24px;
+      padding: var(--space-lg);
+      background: linear-gradient(
+        145deg,
+        rgba(15, 23, 42, 0.98),
+        rgba(15, 23, 42, 0.9)
+      );
+      color: white;
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .hero-visual-placeholder {
+      position: relative;
+      z-index: 1;
+      border-radius: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      padding: var(--space-lg);
+      background: linear-gradient(
+        135deg,
+        rgba(75, 107, 251, 0.3),
+        rgba(15, 23, 42, 0.6)
+      );
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      font-size: 13px;
+    }
+
+    .hero-visual-orbit {
+      position: absolute;
+      inset: -40%;
+      background: radial-gradient(circle at 10% 0, rgba(74, 222, 128, 0.28), transparent 60%),
+        radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.28), transparent 50%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    /* =========================
+       Shared Section Styles
+       ========================= */
+    .section-header {
+      max-width: 640px;
+      margin: 0 auto var(--space-xl);
+      text-align: left;
+    }
+
+    .section-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+    }
+
+    .section-eyebrow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--color-primary);
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      margin-bottom: var(--space-sm);
+    }
+
+    .section-description {
+      font-size: 0.98rem;
+      color: var(--color-text-muted);
+    }
+
+    .card-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-lg);
+    }
+
+    .card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-subtle);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      flex: 1 1 0;
+      min-width: min(260px, 100%);
+    }
+
+    .card-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      min-height: 20px;
+      border-radius: 999px;
+      background: var(--color-primary-soft);
+      color: var(--color-primary);
+      font-size: 11px;
+      margin-bottom: var(--space-sm);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .card-body {
+      font-size: 0.95rem;
+      color: var(--color-text-muted);
+    }
+
+    /* =========================
+       Section: Accessibility
+       ========================= */
+    .section-access {
+      background: transparent;
+    }
+
+    .section-access-inner {
+      background: var(--color-surface);
+      border-radius: 26px;
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    /* =========================
+       Section: Doc Demo
+       ========================= */
+    .section-doc {
+      background: var(--color-surface-soft);
+    }
+
+    .doc-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+      gap: var(--space-xl);
+      align-items: stretch;
+    }
+
+    .doc-widget {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      border: 1px solid var(--color-border-subtle);
+      box-shadow: var(--shadow-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .doc-panels {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-md);
+    }
+
+    .doc-panel {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-subtle);
+      padding: var(--space-md);
+      background: #f9fafb;
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .doc-panel-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .doc-panel-placeholder {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      border: 1px dashed rgba(148, 163, 184, 0.9);
+      color: var(--color-text-muted);
+      padding: var(--space-md);
+      text-align: center;
+    }
+
+    .doc-slider-note {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
+
+    /* =========================
+       Section: 3D Character
+       ========================= */
+    .section-3d {
+      background: transparent;
+    }
+
+    .character-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: var(--space-xl);
+      align-items: center;
+    }
+
+    .character-stage {
+      background: var(--color-surface);
+      border-radius: 28px;
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+
+    .character-view {
+      height: 260px;
+      border-radius: 20px;
+      background: radial-gradient(circle at 20% 0, #fef3c7, transparent 60%),
+        radial-gradient(circle at 80% 100%, #dbeafe, transparent 55%);
+      border: 1px dashed rgba(148, 163, 184, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-muted);
+      font-size: 0.9rem;
+      text-align: center;
+      padding: var(--space-md);
+    }
+
+    .pose-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .btn-pill {
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      background: #f9fafb;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--color-text-muted);
+      transition: background var(--transition-fast), border-color var(--transition-fast),
+        color var(--transition-fast);
+    }
+
+    .btn-pill.is-active {
+      background: var(--color-primary-soft);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .character-notes {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    /* =========================
+       Section: Interaction
+       ========================= */
+    .section-interaction {
+      background: var(--color-surface-soft);
+    }
+
+    .interaction-card {
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--color-surface);
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.26);
+      padding: var(--space-xl);
+    }
+
+    .interaction-question {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: var(--space-md);
+    }
+
+    .interaction-options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
+    }
+
+    .interaction-option {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      padding: 8px 10px;
+      border-radius: 10px;
+      transition: background var(--transition-fast);
+    }
+
+    .interaction-option:hover {
+      background: rgba(148, 163, 184, 0.08);
+    }
+
+    .interaction-option input[type="radio"] {
+      margin-top: 3px;
+    }
+
+    .interaction-option label {
+      font-size: 0.96rem;
+    }
+
+    .interaction-footer {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+
+    .interaction-feedback {
+      font-size: 0.92rem;
+      padding: 8px 10px;
+      border-left: 3px solid var(--color-primary);
+      background: rgba(79, 70, 229, 0.03);
+      color: var(--color-text-muted);
+    }
+
+    /* =========================
+       Section: Under the Hood
+       ========================= */
+    .section-under-hood {
+      background: transparent;
+    }
+
+    .underhood-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .underhood-cta {
+      background: #111827;
+      color: white;
+      border-radius: 24px;
+      padding: var(--space-lg) var(--space-xl);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+    }
+
+    .underhood-cta-text {
+      font-size: 1.02rem;
+    }
+
+    .underhood-cta-sub {
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+
+    .btn-cta-light {
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(249, 250, 251, 0.35);
+      background: rgba(15, 23, 42, 0.4);
+      color: #e5e7eb;
+      padding: 8px 18px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .btn-cta-light:hover {
+      background: rgba(31, 41, 55, 0.8);
+      transform: translateY(-1px);
+    }
+
+    /* =========================
+       Footer
+       ========================= */
+    footer.site-footer {
+      padding: var(--space-lg) 0 var(--space-xl);
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    .site-footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    /* =========================
+       Responsive
+       ========================= */
+    @media (max-width: 900px) {
+      .hero-inner,
+      .doc-layout,
+      .character-layout,
+      .underhood-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .hero-inner {
+        padding-top: var(--space-xl);
+      }
+
+      .hero-visual {
+        order: -1;
+      }
+
+      .section-header {
+        margin-bottom: var(--space-lg);
+      }
+
+      .section-access-inner {
+        padding: var(--space-lg);
+      }
+
+      .interaction-card {
+        padding: var(--space-lg);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .site-header-inner {
+        gap: var(--space-md);
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .hero-subtitle {
+        font-size: 0.95rem;
+      }
+
+      .card {
+        padding: var(--space-md);
+      }
+
+      section {
+        padding: var(--space-xl) 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <div class="page">
+    <header class="site-header" role="banner">
+      <div class="container site-header-inner">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <span>Web‑First Learning Demo</span>
+        </div>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="#accessibility">Accessibility</a>
+          <a href="#doc-demo">Documents</a>
+          <a href="#character-3d">3D</a>
+          <a href="#interaction">Interaction</a>
+          <a href="#under-hood">Under the hood</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" role="main">
+      <!-- Hero -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="container hero-inner">
+          <div class="hero-copy">
+            <div class="hero-copy-eyebrow">
+              <span class="hero-copy-eyebrow-badge" aria-hidden="true"></span>
+              <span>Prototype · Web‑native learning</span>
+            </div>
+            <h1 id="hero-title" class="hero-title">
+              Modern, accessible learning<br />with the open web.
+            </h1>
+            <p class="hero-subtitle">
+              A compact demo of what learning experiences can look like when they’re built
+              with HTML, CSS, and JavaScript from the ground up—crisp media, lightweight
+              3D, and accessible interactions.
+            </p>
+            <div class="hero-actions">
+              <button class="btn-primary" type="button">
+                Explore the demo
+                <span aria-hidden="true">↘</span>
+              </button>
+              <button class="btn-link" type="button">
+                Jump to accessibility
+                <span class="chevron" aria-hidden="true">↓</span>
+              </button>
+            </div>
+          </div>
+     <aside class="hero-visual" aria-label="Preview of the demo experience">
+            <div class="hero-visual-orbit" aria-hidden="true"></div>
+            <div class="hero-visual-placeholder">
+              <!-- Simple inline glTF viewer for the downloaded character -->
+              <div
+                id="hero-character-viewer"
+                aria-label="Cute 3D character preview"
+                style="width: 100%; height: 220px; border-radius: 16px; background: rgba(15,23,42,0.7); display: flex; align-items: center; justify-content: center; color: #e5e7eb; font-size: 13px; text-align: center;"
+              >
+                Placeholder: 3D character (assets/character.glb)
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Accessibility -->
+      <section
+        id="accessibility"
+        class="section-access"
+        aria-labelledby="access-title"
+      >
+        <div class="container section-access-inner">
+          <header class="section-header">
+            <div class="section-eyebrow">
+              <span class="section-eyebrow-dot" aria-hidden="true"></span>
+              <span>Section 01</span>
+            </div>
+            <h2 id="access-title" class="section-title">Accessibility by design</h2>
+            <p class="section-description">
+              This demo treats accessibility as a core feature. Semantic structure,
+              keyboard‑first patterns, and screen reader‑friendly feedback are all built
+              in from the first line of code.
+            </p>
+          </header>
+
+          <div class="card-row" role="list">
+            <article class="card" role="listitem">
+              <div class="card-label" aria-hidden="true">A</div>
+              <h3 class="card-title">Semantic structure</h3>
+              <p class="card-body">
+                Header, navigation, main, and footer landmarks give assistive
+                technologies a clear map of the page, with headings that reflect the
+                content hierarchy.
+              </p>
+            </article>
+            <article class="card" role="listitem">
+              <div class="card-label" aria-hidden="true">B</div>
+              <h3 class="card-title">Keyboard‑first interactions</h3>
+              <p class="card-body">
+                Every interactive element is reachable and usable with the keyboard.
+                Focus styles are visible and consistent across sections.
+              </p>
+            </article>
+            <article class="card" role="listitem">
+              <div class="card-label" aria-hidden="true">C</div>
+              <h3 class="card-title">Screen reader‑friendly feedback</h3>
+              <p class="card-body">
+                Live regions announce state changes like quiz results so learners using
+                screen readers stay in sync with what’s happening visually.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Doc demo -->
+      <section
+        id="doc-demo"
+        class="section-doc"
+        aria-labelledby="doc-title"
+      >
+        <div class="container">
+          <header class="section-header">
+            <div class="section-eyebrow">
+              <span class="section-eyebrow-dot" aria-hidden="true"></span>
+              <span>Section 02</span>
+            </div>
+            <h2 id="doc-title" class="section-title">Crisp document views</h2>
+            <p class="section-description">
+              Document screenshots are prepared for clarity and presented with controls
+              that make them easy to explore at different zoom levels.
+            </p>
+          </header>
+
+          <div class="doc-layout">
+            <div class="card">
+              <h3 class="card-title">Media pipeline</h3>
+              <p class="card-body">
+                Screenshots are captured at the right resolution, optimized once, and
+                displayed without surprise compression. Learners see clean, legible text
+                even when zooming.
+              </p>
+              <div style="height: 12px"></div>
+              <h3 class="card-title">Zoom and inspect</h3>
+              <p class="card-body">
+                From a keyboard‑friendly “view larger” button to clear alt text,
+                everything is designed so learners can examine content without fighting
+                the interface.
+              </p>
+            </div>
+            <div class="doc-widget" aria-label="Document clarity comparison">
+              <div class="doc-panels">
+                <div class="doc-panel">
+                  <div class="doc-panel-label">Low‑quality output</div>
+                  <div class="doc-panel-placeholder">
+                    Placeholder: blurred document image
+                  </div>
+                  <p>
+                    Over‑compressed text and UI elements make this example difficult to
+                    read at typical zoom levels.
+                  </p>
+                </div>
+                <div class="doc-panel">
+                  <div class="doc-panel-label">High‑quality output</div>
+                  <div class="doc-panel-placeholder">
+                    Placeholder: crisp document image
+                  </div>
+                  <p>
+                    The same content, captured and sized correctly so text and details
+                    remain sharp.
+                  </p>
+                </div>
+              </div>
+              <p class="doc-slider-note">
+                In a full implementation, this area can use a keyboard‑accessible
+                comparison slider or zoom control.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3D character -->
+      <section
+        id="character-3d"
+        class="section-3d"
+        aria-labelledby="character-title"
+      >
+        <div class="container">
+          <header class="section-header">
+            <div class="section-eyebrow">
+              <span class="section-eyebrow-dot" aria-hidden="true"></span>
+              <span>Section 03</span>
+            </div>
+            <h2 id="character-title" class="section-title">
+              Lightweight 3D on the web
+            </h2>
+            <p class="section-description">
+              A simple character generated from 2D art, refined in Blender, and
+              displayed using a web‑friendly 3D format.
+            </p>
+          </header>
+
+          <div class="character-layout">
+            <div class="character-stage" aria-label="3D character preview">
+              <div class="character-view">
+                Placeholder: interactive 3D character viewer or animated loop
+              </div>
+              <div class="pose-buttons" aria-label="Character pose presets">
+                <button class="btn-pill is-active" type="button">Idle</button>
+                <button class="btn-pill" type="button">Wave</button>
+                <button class="btn-pill" type="button">Point</button>
+              </div>
+              <div aria-live="polite" class="card-body">
+                Current pose: Idle (placeholder announcement for screen readers).
+              </div>
+            </div>
+            <aside class="character-notes" aria-label="3D workflow summary">
+              <article class="card">
+                <h3 class="card-title">From sketch to mesh</h3>
+                <p class="card-body">
+                  A simple character design is created in 2D, converted with
+                  image‑to‑3D tools, and lightly cleaned and rigged in Blender.
+                </p>
+              </article>
+              <article class="card">
+                <h3 class="card-title">Ready for browsers</h3>
+                <p class="card-body">
+                  The final model is exported as a compact, web‑ready file so learners
+                  can view it on standard devices without plugins.
+                </p>
+              </article>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- Interaction -->
+      <section
+        id="interaction"
+        class="section-interaction"
+        aria-labelledby="interaction-title"
+      >
+        <div class="container">
+          <header class="section-header">
+            <div class="section-eyebrow">
+              <span class="section-eyebrow-dot" aria-hidden="true"></span>
+              <span>Section 04</span>
+            </div>
+            <h2 id="interaction-title" class="section-title">
+              Accessible practice activity
+            </h2>
+            <p class="section-description">
+              A short scenario question built with standard HTML form controls, designed
+              for keyboard and screen reader users.
+            </p>
+          </header>
+
+          <article class="interaction-card">
+            <p class="interaction-question">
+              You’re updating an online lesson. What’s the first step to ensure it’s
+              accessible?
+            </p>
+            <form class="interaction-form" aria-describedby="interaction-help">
+              <div class="interaction-options">
+                <div class="interaction-option">
+                  <input
+                    type="radio"
+                    id="opt-structure"
+                    name="accessibility-step"
+                  />
+                  <label for="opt-structure">
+                    Add keyboard focus and clear labels to interactive elements.
+                  </label>
+                </div>
+                <div class="interaction-option">
+                  <input type="radio" id="opt-color" name="accessibility-step" />
+                  <label for="opt-color">
+                    Rely on color alone to show important information.
+                  </label>
+                </div>
+                <div class="interaction-option">
+                  <input type="radio" id="opt-hide" name="accessibility-step" />
+                  <label for="opt-hide">
+                    Hide complex content from screen readers to simplify the page.
+                  </label>
+                </div>
+              </div>
+              <div id="interaction-help" class="card-body">
+                In the finished version, this button will check the answer and update the
+                feedback message below.
+              </div>
+              <div class="interaction-footer">
+                <button class="btn-primary" type="button">
+                  Check answer
+                </button>
+                <div
+                  class="interaction-feedback"
+                  role="status"
+                  aria-live="polite"
+                >
+                  Placeholder: feedback message appears here based on the selected
+                  option.
+                </div>
+              </div>
+            </form>
+          </article>
+        </div>
+      </section>
+
+      <!-- Under the hood -->
+      <section
+        id="under-hood"
+        class="section-under-hood"
+        aria-labelledby="underhood-title"
+      >
+        <div class="container">
+          <header class="section-header">
+            <div class="section-eyebrow">
+              <span class="section-eyebrow-dot" aria-hidden="true"></span>
+              <span>Section 05</span>
+            </div>
+            <h2 id="underhood-title" class="section-title">Under the hood</h2>
+            <p class="section-description">
+              A quick look at the tools and choices behind this prototype—and why they
+              matter for real‑world learning projects.
+            </p>
+          </header>
+
+          <div class="underhood-layout">
+            <div>
+              <h3 class="card-title">Stack</h3>
+              <div class="card-row">
+                <article class="card">
+                  <h4 class="card-title">HTML &amp; CSS</h4>
+                  <p class="card-body">
+                    Semantic structure and modern CSS layout drive responsiveness,
+                    typography, and consistent visuals.
+                  </p>
+                </article>
+                <article class="card">
+                  <h4 class="card-title">JavaScript</h4>
+                  <p class="card-body">
+                    Lightweight scripting powers transitions, interactive widgets, and
+                    the practice activity.
+                  </p>
+                </article>
+                <article class="card">
+                  <h4 class="card-title">3D &amp; media tools</h4>
+                  <p class="card-body">
+                    External tools like Blender and image editors supply clean assets
+                    that the browser can display efficiently.
+                  </p>
+                </article>
+              </div>
+            </div>
+            <div>
+              <h3 class="card-title">Why it matters</h3>
+              <div class="card-row">
+                <article class="card">
+                  <h4 class="card-title">No licenses required</h4>
+                  <p class="card-body">
+                    The prototype runs on open web standards, without proprietary
+                    authoring licenses or plugins.
+                  </p>
+                </article>
+                <article class="card">
+                  <h4 class="card-title">Audit‑ready accessibility</h4>
+                  <p class="card-body">
+                    Accessibility can be tested with common tools and adjusted directly
+                    in code, rather than through opaque exports.
+                  </p>
+                </article>
+                <article class="card">
+                  <h4 class="card-title">Portable delivery</h4>
+                  <p class="card-body">
+                    The same experience can live on an LMS, intranet, or public site
+                    with minimal changes.
+                  </p>
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <div class="underhood-cta">
+            <div>
+              <div class="underhood-cta-text">
+                Want learning experiences like this for your team?
+              </div>
+              <div class="underhood-cta-sub">
+                This prototype is a starting point for fully custom, web‑native
+                learning builds.
+              </div>
+            </div>
+            <button class="btn-cta-light" type="button">
+              Let’s talk about your project
+              <span aria-hidden="true">↗</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="container site-footer-inner">
+        <span>Prototype · Web‑First Learning Demo</span>
+        <span>Built as a concept for modern, accessible training experiences.</span>
+      </div>
+    </footer>
+  </div>
+  <!-- three.js + helpers from CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+  console.log("three present?", !!window.THREE);
+  console.log("GLTFLoader present?", !!(window.THREE && THREE.GLTFLoader));
+</script>
+
+
+<script>
+  (function () {
+    console.log("three present?", !!window.THREE);
+    console.log("GLTFLoader present?", !!(window.THREE && THREE.GLTFLoader));
+
+    var container = document.getElementById("hero-character-viewer");
+    console.log("hero 3D script running");
+    console.log("container found?", !!container);
+
+    if (!container || !window.THREE || !THREE.GLTFLoader) return;
+
+    // Basic Three.js setup
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(
+      45,
+      container.clientWidth / container.clientHeight,
+      0.1,
+      100
+    );
+
+    var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio || 1);
+    container.innerHTML = "";
+    container.appendChild(renderer.domElement);
+
+    // Simple lighting
+    var ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+    var directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    directionalLight.position.set(1, 1, 1).normalize();
+    scene.add(directionalLight);
+
+    console.log("loading hero GLB…");
+    var loader = new THREE.GLTFLoader();
+    loader.load(
+      "assets/Character2.glb", // or "character.glb" if it's next to the HTML file
+      function (gltf) {
+        console.log("hero loaded glb", gltf);
+        var model = gltf.scene;
+        scene.add(model);
+        window.heroModel = model; // keep a reference
+
+        // Center and scale model
+        var box = new THREE.Box3().setFromObject(model);
+        var center = box.getCenter(new THREE.Vector3());
+        var size = box.getSize(new THREE.Vector3());
+        var maxDim = Math.max(size.x, size.y, size.z);
+        var scale = 1.6 / maxDim;
+        model.scale.set(scale, scale, scale);
+        model.position.sub(center.multiplyScalar(scale));
+
+        camera.position.set(0, 0.8, maxDim * scale * 2.4);
+        camera.lookAt(0, 0, 0);
+      },
+      undefined,
+      function (error) {
+        console.error("Error loading hero GLB:", error);
+        container.textContent = "Could not load 3D character.";
+      }
+    );
+
+    var controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.enablePan = false;
+
+    function onResize() {
+      var w = container.clientWidth;
+      var h = container.clientHeight;
+      if (!w || !h) return;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+    window.addEventListener("resize", onResize);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (window.heroModel) {
+    window.heroModel.rotation.y += 0.004;
+  }
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+  })();
+</script>
+
+
+
+
+</body>
+</html>
