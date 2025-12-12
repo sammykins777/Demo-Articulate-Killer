@@ -1228,12 +1228,13 @@ confirmation first.
         var center = box.getCenter(new THREE.Vector3());
         var size = box.getSize(new THREE.Vector3());
         var maxDim = Math.max(size.x, size.y, size.z);
-        var scale = 1.6 / maxDim;
-        model.scale.set(scale, scale, scale);
-        model.position.sub(center.multiplyScalar(scale));
+     var scale = 2.1 / maxDim;              // was 1.6 / maxDim
+model.scale.set(scale, scale, scale);
+model.position.sub(center.multiplyScalar(scale * 0.9)); // slight upward bias
 
-        camera.position.set(0, 0.8, maxDim * scale * 2.4);
-        camera.lookAt(0, 0, 0);
+camera.position.set(0, 0.7, maxDim * scale * 1.8);      // closer + a bit lower
+camera.lookAt(0, 0.1, 0);
+
       },
       undefined,
       function (error) {
