@@ -31,8 +31,8 @@ confirmation first.
       --color-bg: #f5f5f8;
       --color-surface: #ffffff;
       --color-surface-soft: #f1f3f8;
-      --color-primary: #4b6bfb;
-      --color-primary-soft: rgba(75, 107, 251, 0.1);
+      --color-primary: #385cfe;
+      --color-primary-soft: rgba(75, 107, 251, 0.049);
       --color-accent: #f97373;
       --color-text: #1f2933;
       --color-text-muted: #6b7280;
@@ -357,12 +357,25 @@ confirmation first.
       margin-bottom: var(--space-sm);
     }
 
+    .section-eyebrow-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+
     .section-eyebrow-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--color-primary);
-    }
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--color-primary);
+}
+
 
     .section-title {
       font-size: 1.6rem;
@@ -643,6 +656,7 @@ confirmation first.
       gap: var(--space-xl);
       margin-bottom: var(--space-xl);
     }
+    
 
     .underhood-cta {
       background: #111827;
@@ -833,8 +847,8 @@ confirmation first.
         <div class="container section-access-inner">
           <header class="section-header">
             <div class="section-eyebrow">
-              <span class="section-eyebrow-dot" aria-hidden="true"></span>
-              <span>Section 01</span>
+              
+              <span class="section-eyebrow-pill">Section 01</span>
             </div>
             <h2 id="access-title" class="section-title">Accessibility by design</h2>
             <p class="section-description">
@@ -880,11 +894,11 @@ confirmation first.
         class="section-doc"
         aria-labelledby="doc-title"
       >
-        <div class="container">
+        <div class="container section-access-inner">
           <header class="section-header">
             <div class="section-eyebrow">
-              <span class="section-eyebrow-dot" aria-hidden="true"></span>
-              <span>Section 02</span>
+             
+              <span class="section-eyebrow-pill">Section 02</span>
             </div>
             <h2 id="doc-title" class="section-title">Crisp document views</h2>
             <p class="section-description">
@@ -947,11 +961,11 @@ confirmation first.
         class="section-3d"
         aria-labelledby="character-title"
       >
-        <div class="container">
+        <div class="container section-access-inner">
           <header class="section-header">
             <div class="section-eyebrow">
-              <span class="section-eyebrow-dot" aria-hidden="true"></span>
-              <span>Section 03</span>
+              
+              <span class="section-eyebrow-pill">Section 03</span>
             </div>
             <h2 id="character-title" class="section-title">
               Lightweight 3D on the web
@@ -1002,11 +1016,11 @@ confirmation first.
         class="section-interaction"
         aria-labelledby="interaction-title"
       >
-        <div class="container">
+        <div class="container section-access-inner">
           <header class="section-header">
             <div class="section-eyebrow">
-              <span class="section-eyebrow-dot" aria-hidden="true"></span>
-              <span>Section 04</span>
+              
+              <span class="section-eyebrow-pill">Section 04</span>
             </div>
             <h2 id="interaction-title" class="section-title">
               Accessible practice activity
@@ -1075,11 +1089,11 @@ confirmation first.
         class="section-under-hood"
         aria-labelledby="underhood-title"
       >
-        <div class="container">
+        <div class="container section-access-inner">
           <header class="section-header">
             <div class="section-eyebrow">
-              <span class="section-eyebrow-dot" aria-hidden="true"></span>
-              <span>Section 05</span>
+              
+              <span class="section-eyebrow-pill">Section 05</span>
             </div>
             <h2 id="underhood-title" class="section-title">Under the hood</h2>
             <p class="section-description">
@@ -1090,10 +1104,12 @@ confirmation first.
 
           <div class="underhood-layout">
             <div>
-              <h3 class="card-title">Stack</h3>
+            
               <div class="card-row">
-                <article class="card">
-                  <h4 class="card-title">HTML &amp; CSS</h4>
+                <article class="card">               
+                 
+                  <h3 class="card-title">HTML &amp; CSS</h3>
+                 
                   <p class="card-body">
                     Semantic structure and modern CSS layout drive responsiveness,
                     typography, and consistent visuals.
@@ -1116,7 +1132,7 @@ confirmation first.
               </div>
             </div>
             <div>
-              <h3 class="card-title">Why it matters</h3>
+              
               <div class="card-row">
                 <article class="card">
                   <h4 class="card-title">No licenses required</h4>
@@ -1143,24 +1159,22 @@ confirmation first.
             </div>
           </div>
 
-          <div class="underhood-cta">
-            <div>
-              <div class="underhood-cta-text">
-                Want learning experiences like this for your team?
-              </div>
-              <div class="underhood-cta-sub">
-                This prototype is a starting point for fully custom, web‑native
-                learning builds.
-              </div>
-            </div>
-            <button class="btn-cta-light" type="button">
-              Let’s talk about your project
-              <span aria-hidden="true">↗</span>
-            </button>
-          </div>
+       <div class="underhood-cta">
+  <div>
+    <div class="underhood-cta-text">
+      You can build something like this, too.
+    </div>
+    <div class="underhood-cta-sub">
+      With curiosity, a solid plan, and a friendly AI partner, you can create modern, beautiful eLearning experiences in your browser—without being a developer or buying pricey tools.
+    </div>
+  </div>
+  
+</div>
+
         </div>
       </section>
     </main>
+   
 
     <footer class="site-footer" role="contentinfo">
       <div class="container site-footer-inner">
