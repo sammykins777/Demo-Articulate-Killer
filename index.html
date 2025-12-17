@@ -65,6 +65,9 @@ confirmation first.
     * {
       box-sizing: border-box;
     }
+    html {
+  scroll-behavior: smooth;
+}
 
     body {
       margin: 0;
@@ -743,6 +746,25 @@ confirmation first.
       color: var(--color-text-muted);
     }
 
+    @keyframes correctPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: var(--shadow-soft);
+  }
+  50% {
+    transform: scale(1.01);
+    box-shadow: 0 22px 50px rgba(56, 92, 254, 0.30);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: var(--shadow-soft);
+  }
+}
+
+.interaction-card[data-state="correct"] {
+  animation: correctPulse 480ms var(--transition-med);
+}
+
     /* =========================
        Section: Under the Hood
        ========================= */
@@ -1091,12 +1113,17 @@ confirmation first.
           <div class="character-layout">
             <div class="character-stage" aria-label="3D character preview">
               <div class="character-view">
-                Placeholder: interactive 3D character viewer or animated loop
+                 <div
+    id="character-3d-viewer"
+    aria-label="Interactive 3D character controls demo"
+    style="width: 100%; height: 100%; border-radius: 16px;"
+  ></div>
               </div>
               <div class="pose-buttons" aria-label="Character pose presets">
-                <button class="btn-pill is-active" type="button">Idle</button>
-                <button class="btn-pill" type="button">Wave</button>
-                <button class="btn-pill" type="button">Point</button>
+                <button class="btn-pill is-active" type="button">Rotate left</button>
+                <button class="btn-pill" type="button">Rotate right</button>
+                <button class="btn-pill" type="button">Zoom in</button>
+                <button class="btn-pill" type="button">Zoom out</button>
               </div>
               <div aria-live="polite" class="card-body">
                 Current pose: Idle (placeholder announcement for screen readers).
@@ -1143,7 +1170,7 @@ confirmation first.
             </p>
           </header>
 
-          <article class="interaction-card">
+          <article class="interaction-card"  style="position: relative;">
             <p class="interaction-question">
               You’re updating an online lesson. What’s the first step to ensure it’s
               accessible?
@@ -1190,6 +1217,23 @@ confirmation first.
                   option.
                 </div>
               </div>
+                <!-- <dotlottie-wc
+    id="interaction-confetti"
+    src="https://lottie.host/27f327ad-9448-4305-bf3e-7ea856387cc8/FGhUl8iTf2.lottie"
+      style="
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    max-width: 300px; 
+    width: 100%;
+    
+    pointer-events: none;
+  "
+    autoplay="false"
+    loop="false"
+    aria-hidden="true"
+    hidden
+  ></dotlottie-wc> -->
             </form>
           </article>
         </div>
@@ -1336,6 +1380,10 @@ confirmation first.
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+<script
+  src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.11/dist/dotlottie-wc.js"
+  type="module"
+></script>
 
 <script>
   console.log("three present?", !!window.THREE);
@@ -1430,6 +1478,214 @@ camera.lookAt(0, 0.1, 0);
       renderer.render(scene, camera);
     }
     animate();
+  })();
+</script>
+
+<script>
+  (function () {
+    if (!window.THREE || !THREE.GLTFLoader) return;
+
+    var container = document.getElementById('character-3d-viewer');
+    if (!container) return;
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(
+      45,
+      container.clientWidth / container.clientHeight,
+      0.1,
+      100
+    );
+
+    var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio || 1);
+    container.innerHTML = '';
+    container.appendChild(renderer.domElement);
+
+    // lighting
+    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+    var dir = new THREE.DirectionalLight(0xffffff, 1.0);
+    dir.position.set(1, 1, 1).normalize();
+    scene.add(dir);
+
+    var model = null;
+
+    var loader = new THREE.GLTFLoader();
+    loader.load(
+      'assets/Character2.glb',
+      function (gltf) {
+        model = gltf.scene;
+        scene.add(model);
+
+        var box = new THREE.Box3().setFromObject(model);
+        var center = box.getCenter(new THREE.Vector3());
+        var size = box.getSize(new THREE.Vector3());
+        var maxDim = Math.max(size.x, size.y, size.z);
+        var scale = 2.1 / maxDim;
+
+        model.scale.set(scale, scale, scale);
+        model.position.sub(center.multiplyScalar(scale * 0.9));
+
+        camera.position.set(0, 0.7, maxDim * scale * 1.8);
+        camera.lookAt(0, 0.1, 0);
+      },
+      undefined,
+      function (error) {
+        console.error('Error loading 3D section model:', error);
+        container.textContent = 'Could not load 3D character.';
+      }
+    );
+
+    var controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.enablePan = false;
+
+    function onResize() {
+      var w = container.clientWidth;
+      var h = container.clientHeight;
+      if (!w || !h) return;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', onResize);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // --- Simple controls: rotate L/R, zoom in/out ---
+    var buttons = document.querySelectorAll(
+      '#character-3d .pose-buttons .btn-pill'
+    );
+    if (!buttons.length) return;
+    var liveRegion = document.querySelector(
+  '#character-3d .character-stage [aria-live="polite"]'
+);
+
+
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var label = btn.textContent.trim().toLowerCase();
+    
+    
+        buttons.forEach(function (b) {
+          b.classList.toggle('is-active', b === btn);
+        });
+
+        if (label === 'rotate left' && model) {
+          model.rotation.y -= 0.3;
+        } else if (label === 'rotate right' && model) {
+          model.rotation.y += 0.3;
+        } else if (label === 'zoom in') {
+          camera.position.z = Math.max(camera.position.z - 0.3, 0.8);
+        } else if (label === 'zoom out') {
+          camera.position.z += 0.3;
+        }
+// Screen reader-friendly announcement
+    if (liveRegion) {
+      var announcement = '';
+
+      if (label === 'rotate left') {
+        announcement = 'Character rotated slightly left.';
+      } else if (label === 'rotate right') {
+        announcement = 'Character rotated slightly right.';
+      } else if (label === 'zoom in') {
+        announcement = 'View zoomed in on the character.';
+      } else if (label === 'zoom out') {
+        announcement = 'View zoomed out from the character.';
+      }
+
+      if (announcement) {
+        liveRegion.textContent = announcement;
+      }
+    }
+
+      });
+    });
+  })();
+</script>
+<script>
+  (function () {
+    var form = document.querySelector('#interaction .interaction-form');
+    if (!form) return;
+
+    var checkButton = form.querySelector('.interaction-footer .btn-primary');
+    var feedback = form.querySelector('.interaction-feedback');
+    var options = form.querySelectorAll('input[name="accessibility-step"]');
+    var confettiEl = document.getElementById('interaction-confetti');
+    var card = form.closest('.interaction-card');
+
+    if (!checkButton || !feedback || !options.length) return;
+
+    // Make absolutely sure the confetti starts hidden
+    if (confettiEl) {
+      confettiEl.hidden = true;
+      confettiEl.style.display = 'none';
+    }
+
+    function getSelectedId() {
+      var chosen = null;
+      options.forEach(function (opt) {
+        if (opt.checked) chosen = opt.id;
+      });
+      return chosen;
+    }
+
+    function playConfettiOnce() {
+      if (!confettiEl) return;
+
+      // show visually
+      confettiEl.hidden = false;
+      confettiEl.style.display = 'block';
+
+      // restart animation if API exists
+      if (typeof confettiEl.play === 'function') {
+        if (typeof confettiEl.stop === 'function') {
+          confettiEl.stop();
+        }
+        confettiEl.play();
+      }
+
+      // hide again after ~1.5s
+      setTimeout(function () {
+        confettiEl.hidden = true;
+        confettiEl.style.display = 'none';
+      }, 1500);
+    }
+
+    checkButton.addEventListener('click', function () {
+      var chosenId = getSelectedId();
+
+      if (!chosenId) {
+        feedback.textContent =
+          'Select an option first, then choose “Check answer” to see feedback.';
+        return;
+      }
+
+      if (chosenId === 'opt-structure') {
+        feedback.textContent =
+          'Correct. Starting with clear structure, labels, and keyboard focus sets up everything else for accessibility.';
+        if (card) {
+          // retrigger animation by toggling the attribute
+          card.removeAttribute('data-state');
+          void card.offsetWidth; // force reflow
+          card.setAttribute('data-state', 'correct');
+        };
+      } else if (chosenId === 'opt-color') {
+         if (card) card.removeAttribute('data-state');
+        feedback.textContent =
+          'Not quite. Relying on color alone can exclude learners with low vision or color blindness.';
+      } else if (chosenId === 'opt-hide') {
+        if (card) card.removeAttribute('data-state');
+        feedback.textContent =
+          'Not quite. Hiding content from screen readers usually removes important information instead of simplifying it.';
+      }
+    });
   })();
 </script>
 
