@@ -151,7 +151,7 @@ confirmation first.
       letter-spacing: 0.04em;
       text-transform: uppercase;
       font-size: 12px;
-      color: var(--color-text-muted);
+      color: var(--color-text);
     }
 
     .brand-mark {
@@ -172,7 +172,7 @@ confirmation first.
       display: flex;
       gap: var(--space-md);
       font-size: 14px;
-      color: var(--color-text-muted);
+      color: var(--color-text);
     }
 
     .nav-links a {
@@ -185,6 +185,12 @@ confirmation first.
       background: var(--color-primary-soft);
       color: var(--color-primary);
     }
+
+    .nav-links a.is-active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 500;
+}
 
     .skip-link {
       position: absolute;
@@ -746,24 +752,54 @@ confirmation first.
       color: var(--color-text-muted);
     }
 
-    @keyframes correctPulse {
+    /* Incorrect: warm/red tone + pulse */
+.interaction-card[data-state="incorrect"] .interaction-feedback {
+  border-left-color: var(--color-accent);
+  background: rgba(249, 115, 115, 0.06);
+  color: var(--color-text);
+  animation: incorrectPulse 420ms var(--transition-med);
+}
+
+/* Correct: cool/green-blue border path */
+.interaction-card[data-state="correct"] .interaction-feedback {
+  border-left-color: #22c55e;
+  background: rgba(34, 197, 94, 0.06);
+  color: var(--color-text);
+  position: relative;
+}
+
+/* Incorrect pulse */
+@keyframes incorrectPulse {
   0% {
     transform: scale(1);
-    box-shadow: var(--shadow-soft);
   }
   50% {
-    transform: scale(1.01);
-    box-shadow: 0 22px 50px rgba(56, 92, 254, 0.30);
+    transform: scale(0.99);
   }
   100% {
     transform: scale(1);
-    box-shadow: var(--shadow-soft);
+  }
+}
+/* Correct border reveal around the card */
+.interaction-card[data-state="correct"] {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45);
+  animation: correctPulse 520ms var(--transition-med);
+}
+
+
+@keyframes correctPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45);
+  }
+  60% {
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
   }
 }
 
-.interaction-card[data-state="correct"] {
-  animation: correctPulse 480ms var(--transition-med);
-}
 
     /* =========================
        Section: Under the Hood
@@ -894,6 +930,29 @@ confirmation first.
         padding: var(--space-xl) 0;
       }
     }
+       /* =========================
+       GlOBAL ANIMATIONS
+       ========================= */
+section[data-animate="on"] {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+       @keyframes sectionFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+section[data-animate="on"][data-visible="true"] {
+  animation: sectionFadeUp 420ms var(--transition-med) forwards;
+}
+
   </style>
 </head>
 <body>
@@ -933,7 +992,7 @@ confirmation first.
               with HTML, CSS, and JavaScript from the ground up—crisp media, lightweight
               3D, and accessible interactions.
             </p>
-            <div class="hero-actions">
+            <!-- <div class="hero-actions">
               <button class="btn-primary" type="button">
                 Explore the demo
                 <span aria-hidden="true">↘</span>
@@ -942,7 +1001,7 @@ confirmation first.
                 Jump to accessibility
                 <span class="chevron" aria-hidden="true">↓</span>
               </button>
-            </div>
+            </div> -->
           </div>
      <aside class="hero-visual" aria-label="Preview of the demo experience">
             <div class="hero-visual-orbit" aria-hidden="true"></div>
@@ -965,6 +1024,7 @@ confirmation first.
         id="accessibility"
         class="section-access"
         aria-labelledby="access-title"
+        data-animate="on"
       >
         <div class="container section-access-inner">
           <header class="section-header">
@@ -1015,6 +1075,7 @@ confirmation first.
         id="doc-demo"
         class="section-doc"
         aria-labelledby="doc-title"
+        data-animate="on"
       >
         <div class="container section-access-inner">
           <header class="section-header">
@@ -1078,7 +1139,7 @@ confirmation first.
               </div>
             <button
   type="button"
-  class="btn-link doc-view-larger"
+  class="btn-pill doc-view-larger"
   aria-haspopup="dialog"
   aria-controls="doc-lightbox"
 >
@@ -1094,6 +1155,7 @@ confirmation first.
         id="character-3d"
         class="section-3d"
         aria-labelledby="character-title"
+        data-animate="on"
       >
         <div class="container section-access-inner">
           <header class="section-header">
@@ -1105,8 +1167,8 @@ confirmation first.
               Lightweight 3D on the web
             </h2>
             <p class="section-description">
-              A simple character generated from 2D art, refined in Blender, and
-              displayed using a web‑friendly 3D format.
+                A simple off‑the‑shelf 3D character, exported to a web‑friendly format so it
+  loads quickly and runs smoothly in the browser.
             </p>
           </header>
 
@@ -1133,8 +1195,8 @@ confirmation first.
               <article class="card">
                 <h3 class="card-title">From sketch to mesh</h3>
                 <p class="card-body">
-                  A simple character design is created in 2D, converted with
-                  image‑to‑3D tools, and lightly cleaned and rigged in Blender.
+                 A simple off‑the‑shelf 3D character is imported into Blender for light cleanup
+  and exported in a compact format suited for the web.
                 </p>
               </article>
               <article class="card">
@@ -1154,6 +1216,7 @@ confirmation first.
         id="interaction"
         class="section-interaction"
         aria-labelledby="interaction-title"
+        data-animate="on"
       >
         <div class="container section-access-inner">
           <header class="section-header">
@@ -1244,6 +1307,7 @@ confirmation first.
         id="under-hood"
         class="section-under-hood"
         aria-labelledby="underhood-title"
+        data-animate="on"
       >
         <div class="container section-access-inner">
           <header class="section-header">
@@ -1617,17 +1681,13 @@ camera.lookAt(0, 0.1, 0);
     var checkButton = form.querySelector('.interaction-footer .btn-primary');
     var feedback = form.querySelector('.interaction-feedback');
     var options = form.querySelectorAll('input[name="accessibility-step"]');
-    var confettiEl = document.getElementById('interaction-confetti');
+    // var confettiEl = document.getElementById('interaction-confetti');
     var card = form.closest('.interaction-card');
 
     if (!checkButton || !feedback || !options.length) return;
 
     // Make absolutely sure the confetti starts hidden
-    if (confettiEl) {
-      confettiEl.hidden = true;
-      confettiEl.style.display = 'none';
-    }
-
+   
     function getSelectedId() {
       var chosen = null;
       options.forEach(function (opt) {
@@ -1635,28 +1695,19 @@ camera.lookAt(0, 0.1, 0);
       });
       return chosen;
     }
-
-    function playConfettiOnce() {
-      if (!confettiEl) return;
-
-      // show visually
-      confettiEl.hidden = false;
-      confettiEl.style.display = 'block';
-
-      // restart animation if API exists
-      if (typeof confettiEl.play === 'function') {
-        if (typeof confettiEl.stop === 'function') {
-          confettiEl.stop();
-        }
-        confettiEl.play();
+    
+    
+    function setState(state) {
+      if (!card) return;
+      if (!state) {
+        card.removeAttribute('data-state');
+      } else {
+        card.removeAttribute('data-state');
+        void card.offsetWidth; // reflow
+        card.setAttribute('data-state', state);
       }
-
-      // hide again after ~1.5s
-      setTimeout(function () {
-        confettiEl.hidden = true;
-        confettiEl.style.display = 'none';
-      }, 1500);
     }
+
 
     checkButton.addEventListener('click', function () {
       var chosenId = getSelectedId();
@@ -1668,23 +1719,95 @@ camera.lookAt(0, 0.1, 0);
       }
 
       if (chosenId === 'opt-structure') {
+        setState('correct');
         feedback.textContent =
           'Correct. Starting with clear structure, labels, and keyboard focus sets up everything else for accessibility.';
-        if (card) {
-          // retrigger animation by toggling the attribute
-          card.removeAttribute('data-state');
-          void card.offsetWidth; // force reflow
-          card.setAttribute('data-state', 'correct');
-        };
+        // if (card) {
+        //   // retrigger animation by toggling the attribute
+        //   card.removeAttribute('data-state');
+        //   void card.offsetWidth; // force reflow
+        //   card.setAttribute('data-state', 'correct');
+        // };
       } else if (chosenId === 'opt-color') {
-         if (card) card.removeAttribute('data-state');
+        //  if (card) card.removeAttribute('data-state');
+        setState('incorrect');
         feedback.textContent =
           'Not quite. Relying on color alone can exclude learners with low vision or color blindness.';
       } else if (chosenId === 'opt-hide') {
-        if (card) card.removeAttribute('data-state');
+        // if (card) card.removeAttribute('data-state');
+        setState('incorrect');
         feedback.textContent =
           'Not quite. Hiding content from screen readers usually removes important information instead of simplifying it.';
       }
+    });
+  })();
+</script>
+<script>
+  (function () {
+    var sections = [
+      'accessibility',
+      'doc-demo',
+      'character-3d',
+      'interaction',
+      'under-hood'
+    ]
+      .map(function (id) {
+        var el = document.getElementById(id);
+        return el ? { id: id, el: el } : null;
+      })
+      .filter(Boolean);
+
+    if (!sections.length) return;
+
+    var navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+    if (!navLinks.length) return;
+
+    function setActive(id) {
+      navLinks.forEach(function (link) {
+        var targetId = link.getAttribute('href').slice(1);
+        link.classList.toggle('is-active', targetId === id);
+      });
+    }
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var id = entry.target.id;
+          setActive(id);
+        });
+      },
+      {
+        root: null,
+        threshold: 0.4
+      }
+    );
+
+    sections.forEach(function (s) {
+      observer.observe(s.el);
+    });
+  })();
+</script>
+
+<script>
+  (function () {
+    var animatedSections = document.querySelectorAll('section[data-animate="on"]');
+    if (!animatedSections.length) return;
+
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.setAttribute('data-visible', 'true');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { root: null, threshold: 0.35 }
+    );
+
+    animatedSections.forEach(function (sec) {
+      io.observe(sec);
     });
   })();
 </script>
